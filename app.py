@@ -266,4 +266,28 @@ class RatingResource(Resource):
 
         return response
    
-api.add_resource(RatingResource, '/ratings')   
+api.add_resource(RatingResource, '/ratings')  
+
+class RatingByID(Resource):
+    def get(self, id):
+        rating = Rating.query.get(id)
+  
+        response_dict = rating.to_dict()
+
+        return make_response(jsonify(response_dict), 200)
+
+    def patch(self,id):
+        rating = Rating.query.get(int(id))
+        for attr in request.json:
+            setattr(rating, attr, request.json[attr])
+        db.session.add(rating)
+        db.session.commit()
+
+        response_dict = rating.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            200,
+        )
+        return response
+    
