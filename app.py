@@ -88,4 +88,40 @@ class EmployeeByID(Resource):
             200,
         )
         return response
-api.add_resource(EmployeeByID, '/employees/<int:id>')  
+api.add_resource(EmployeeByID, '/employees/<int:id>') 
+
+################### EMPLOYERS ################
+class EmployerResource(Resource):
+    def get(self):
+        response_dict_list = [n.to_dict() for n in Employer.query.all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+    
+    def post(self):
+        data = request.get_json()
+        new_employer = Employer(
+            name=data['name'],
+            description=data['description'],
+            user_name=data['user_name'], 
+            password=data['password']
+        )
+
+        db.session.add(new_employer)
+        db.session.commit()
+
+        response_dict = new_employer.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            201,
+        )
+
+        return response
+   
+api.add_resource(EmployerResource, '/employers')   
+
