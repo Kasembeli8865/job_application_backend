@@ -307,3 +307,6 @@ class RatingByID(Resource):
 
         return reponse
 api.add_resource(RatingByID, '/ratings/<int:id>')  
+
+if __name__ == '__main__':
+    app.run()

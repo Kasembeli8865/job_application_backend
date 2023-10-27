@@ -43,7 +43,9 @@ def create_jobs(num_jobs):
             title=fake.job(),
             description=fake.text(),
             location=fake.city(),
-            type=fake.random_element(elements=("Full-time", "Part-time", "Contract"))
+            type=fake.random_element(elements=("Full-time", "Part-time", "Contract")),
+            salary=fake.random_int(),
+            image=fake.url()
         )
         db.session.add(job)
 

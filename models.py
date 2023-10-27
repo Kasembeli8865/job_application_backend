@@ -1,24 +1,26 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
-from wtforms.validators import Email, Length
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import Column, Integer, String, Text, DateTime
+from datetime import datetime
+
 db = SQLAlchemy()
 
 class Employee(db.Model):
-
-    __tablename__ = 'employees' 
+    __tablename__ = 'employees'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), nullable=False)
-    username = db.Column(db.String(80), nullable=False)
-    password = db.column(db.String(80), nullable=False)
+    user_name = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(80), nullable=False)
     skills = db.Column(db.String(300))
     experience = db.Column(db.Integer)
 
-    def __init__(self, name, email,username, password, skills, experience):
+    def __init__(self, name, email, user_name, password, skills, experience):
         self.name = name
         self.email = email
-        self.username = username
+        self.user_name = user_name
         self.password = password
         self.skills = skills
         self.experience = experience
@@ -31,8 +33,7 @@ class Employee(db.Model):
             'id': self.id,
             'name': self.name,
             'email': self.email,
-            'username': self.username,
-            # 'password': self.password,
+            'user_name': self.user_name,
             'skills': self.skills,
             'experience': self.experience
         }
@@ -40,40 +41,43 @@ class Employee(db.Model):
     @validates('name')
     def validate_name(self, key, name):
         if not name:
-            raise AssertionError('Name required')  
+            raise AssertionError('Name required')
+        return name
 
     @validates('email')
     def validate_email(self, key, email):
-        if not Email()(email):
-            raise AssertionError('Invalid email')
-    
+        if not email:
+            raise AssertionError('Email required')
+        return email
+
     @validates('username')
-    def validate_username(self, key, username):
-        if not username:
+    def validate_user_name(self, key, user_name):
+        if not user_name:
             raise AssertionError('Username required')
-  
+        return user_name
+
     @validates('password')
     def validate_password(self, key, password):
-        if not Length(min=8)(password):
-            raise AssertionError('Password must be 8 chars')
-        
-        
+        if not password:
+            raise AssertionError('Password required')
+        return password
+
+
 class Employer(db.Model):
-   
     __tablename__ = 'employers'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    username = db.Column(db.String)
-    username = db.Column(db.String)
-    password = db.column(db.Varchar)
+    name = db.Column(db.String, nullable=False)
+    user_name = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
 
-    def __init__(self, name, username, description):
+    def __init__(self, name, user_name, password, description):
         self.name = name
-        self.username = username
+        self.user_name = user_name
+        self.password = password
         self.description = description
-    
+
     def __repr__(self):
         return f'<Employer {self.id} {self.name} {self.description}>'
     
@@ -81,46 +85,44 @@ class Employer(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'username': self.username,
-            # 'password': self.password, 
+            'user_name': self.user_name,
             'description': self.description
         }
     
     @validates('name')
     def validate_name(self, key, name):
         if not name:
-            raise AssertionError('Name required')  
+            raise AssertionError('Name required')
+        return name
 
-    @validates('email')
-    def validate_email(self, key, email):
-        if not Email()(email):
-            raise AssertionError('Invalid email')
-    
     @validates('username')
-    def validate_username(self, key, username):
-        if not username:
+    def validate_user_name(self, key, user_name):
+        if not user_name:
             raise AssertionError('Username required')
-  
+        return user_name
+
     @validates('password')
     def validate_password(self, key, password):
-        if not Length(min=8)(password):
-            raise AssertionError('Password must be 8 chars')
-        
+        if not password:
+            raise AssertionError('Password required')
+        return password
+
+
 class Job(db.Model):
-   
     __tablename__ = 'jobs'
 
-    id = db.Column(db.Integer, primary_key=True) 
-    title = db.Column(db.String)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
     salary = db.Column(db.Integer)
     location = db.Column(db.String)
     type = db.Column(db.String)
     image = db.Column(db.String)
 
-    def __init__(self, title, description, location, type, image):
+    def __init__(self, title, description, salary, location, type, image):
         self.title = title
         self.description = description
+        self.salary = salary
         self.location = location
         self.type = type
         self.image = image
@@ -139,20 +141,22 @@ class Job(db.Model):
             'image': self.image
         }
 
+
 class Rating(db.Model):
-    
     __tablename__ = 'ratings'
 
     id = db.Column(db.Integer, primary_key=True)
-    rating = db.Column(db.Integer)
-    date = db.Column(db.DateTime)
+    rating = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, rating, date):
+    def __init__(self, rating, date=None):
         self.rating = rating
-        self.date = date
+        if date:
+            self.date = date
 
     def __repr__(self):
         return f'<Rating {self.id} {self.rating}>'
+
     def to_dict(self):
         return {
             'id': self.id,
