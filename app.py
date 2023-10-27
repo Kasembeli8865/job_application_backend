@@ -291,3 +291,19 @@ class RatingByID(Resource):
         )
         return response
     
+    def delete(self, id):
+        rating = Rating.query.get(int(id))
+        db.session.delete(rating)
+        db.session.commit()
+
+        response_dict = {
+            'message':'rating succesfully deleted'
+        }
+
+        reponse = make_response(
+            jsonify(response_dict),
+            200,
+        )
+
+        return reponse
+api.add_resource(RatingByID, '/ratings/<int:id>')  
