@@ -125,3 +125,35 @@ class EmployerResource(Resource):
    
 api.add_resource(EmployerResource, '/employers')   
 
+class EmployerByID(Resource):
+    def get(self, id):
+        employer = Employer.query.get(int(id))
+        if employer is not None:
+            response_dict = employer.to_dict()
+            response = make_response(
+                jsonify(response_dict),
+                200,
+            )
+        else:
+            response_dict = {'message': 'Employer not found'}
+            response = make_response(
+                jsonify(response_dict),
+                404,
+            )
+        return response
+     
+    def patch(self,id):
+        employer = Employer.query.get(int(id))
+        for attr in request.json:
+            setattr(employer, attr, request.json[attr])
+        db.session.add(employer)
+        db.session.commit()
+
+        response_dict = employer.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            200,
+        )
+        return response
+api.add_resource(EmployerByID, '/employers/<int:id>')  
