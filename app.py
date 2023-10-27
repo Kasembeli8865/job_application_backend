@@ -5,6 +5,7 @@ from models import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# postgresql://povertyline1_user:YjDL4FXatowosyshHEXWL9way79WVy24@dpg-cl19hpas1bgc73eirco0-a.oregon-postgres.render.com/povertyline1
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key' 
 app.config['JWT_ALGORITHM'] = 'HS256'
