@@ -234,3 +234,36 @@ class JobByID(Resource):
         return reponse
 api.add_resource(JobByID, '/jobs/<int:id>')  
 
+################### RATINGS ################
+class RatingResource(Resource):
+    def get(self):
+        response_dict_list = [n.to_dict() for n in Rating.query.all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+    
+    def post(self):
+        data = request.get_json()
+
+        new_rating = Rating(
+            rating=data['rating']
+           
+        )
+
+        db.session.add(new_rating)
+        db.session.commit()
+
+        response_dict = new_rating.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            201,
+        )
+
+        return response
+   
+api.add_resource(RatingResource, '/ratings')   
