@@ -157,3 +157,39 @@ class EmployerByID(Resource):
         )
         return response
 api.add_resource(EmployerByID, '/employers/<int:id>')  
+
+################### JOBS ################
+class JobResource(Resource):
+    def get(self):
+        response_dict_list = [n.to_dict() for n in Job.query.all()]
+
+        response = make_response(
+            jsonify(response_dict_list),
+            200,
+        )
+
+        return response
+    
+    def post(self):
+        data = request.get_json()
+  
+        new_job = Job(
+            title=data['title'],
+            description=data['description'],
+            location=data['location'],
+            type=data['type']
+        )
+
+        db.session.add(new_job)
+        db.session.commit()
+
+        response_dict = new_job.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            201,
+        )
+
+        return response
+   
+api.add_resource(JobResource, '/jobs')   
