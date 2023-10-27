@@ -50,13 +50,8 @@ class Employee(db.Model):
             raise AssertionError('Email required')
         return email
 
-<<<<<<< HEAD
-    @validates('username')
-    def validate_user_name(self, key, user_name):
-=======
     @validates('user_name')
     def validate_username(self, key, user_name):
->>>>>>> development
         if not user_name:
             raise AssertionError('Username required')
         return user_name
@@ -100,11 +95,7 @@ class Employer(db.Model):
             raise AssertionError('Name required')
         return name
 
-<<<<<<< HEAD
-    @validates('username')
-=======
     @validates('user_name')
->>>>>>> development
     def validate_user_name(self, key, user_name):
         if not user_name:
             raise AssertionError('Username required')
