@@ -193,3 +193,26 @@ class JobResource(Resource):
         return response
    
 api.add_resource(JobResource, '/jobs')   
+
+class JobByID(Resource):
+    def get(self, id):
+
+        job = Job.query.get(id)
+  
+        response_dict = job.to_dict()
+
+        return make_response(jsonify(response_dict), 200)
+    def patch(self,id):
+        job = Job.query.get(int(id))
+        for attr in request.json:
+            setattr(job, attr, request.json[attr])
+        db.session.add(job)
+        db.session.commit()
+
+        response_dict = job.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            200,
+        )
+        return response
