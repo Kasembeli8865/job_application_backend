@@ -52,4 +52,40 @@ class EmployeeResource(Resource):
 
         return response
    
-api.add_resource(EmployeeResource, '/employees')   
+api.add_resource(EmployeeResource, '/employees')  
+
+class EmployeeByID(Resource):
+      
+
+    def get(self, id):
+        employee = Employee.query.get(int(id))
+        if employee is not None:
+            response_dict = employee.to_dict()
+            response = make_response(
+                jsonify(response_dict),
+                200,
+            )
+        else:
+            response_dict = {'message': 'Employee not found'}
+            response = make_response(
+                jsonify(response_dict),
+                404,
+            )
+        return response
+
+     
+    def patch(self,id):
+        employee = Employee.query.get(int(id))
+        for attr in request.json:
+            setattr(employee, attr, request.json[attr])
+        db.session.add(employee)
+        db.session.commit()
+
+        response_dict = employee.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            200,
+        )
+        return response
+api.add_resource(EmployeeByID, '/employees/<int:id>')  
