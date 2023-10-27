@@ -216,3 +216,21 @@ class JobByID(Resource):
             200,
         )
         return response
+    
+    def delete(self, id):
+        job = Job.query.get(int(id))
+        db.session.delete(job)
+        db.session.commit()
+
+        response_dict = {
+            'message':'job succesfully deleted'
+        }
+
+        reponse = make_response(
+            jsonify(response_dict),
+            200,
+        )
+
+        return reponse
+api.add_resource(JobByID, '/jobs/<int:id>')  
+
