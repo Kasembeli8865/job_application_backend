@@ -56,3 +56,23 @@ class Employee(db.Model):
     def validate_password(self, key, password):
         if not Length(min=8)(password):
             raise AssertionError('Password must be 8 chars')
+        
+        
+class Employer(db.Model):
+   
+    __tablename__ = 'employers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    username = db.Column(db.String)
+    username = db.Column(db.String)
+    password = db.column(db.Varchar)
+    description = db.Column(db.Text)
+
+    def __init__(self, name, username, description):
+        self.name = name
+        self.username = username
+        self.description = description
+    
+    def __repr__(self):
+        return f'<Employer {self.id} {self.name} {self.description}>'
