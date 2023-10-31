@@ -36,3 +36,23 @@ class Employee(db.Model):
             'skills': self.skills,
             'experience': self.experience
         }
+    
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Name required')  
+
+    @validates('email')
+    def validate_email(self, key, email):
+        if not Email()(email):
+            raise AssertionError('Invalid email')
+    
+    @validates('username')
+    def validate_username(self, key, username):
+        if not username:
+            raise AssertionError('Username required')
+  
+    @validates('password')
+    def validate_password(self, key, password):
+        if not Length(min=8)(password):
+            raise AssertionError('Password must be 8 chars')
