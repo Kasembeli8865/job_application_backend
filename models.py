@@ -138,3 +138,24 @@ class Job(db.Model):
             'type': self.type,
             'image': self.image
         }
+
+class Rating(db.Model):
+    
+    __tablename__ = 'ratings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer)
+    date = db.Column(db.DateTime)
+
+    def __init__(self, rating, date):
+        self.rating = rating
+        self.date = date
+
+    def __repr__(self):
+        return f'<Rating {self.id} {self.rating}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'rating': self.rating,
+            'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None
+        }
