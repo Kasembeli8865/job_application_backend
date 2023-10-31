@@ -76,3 +76,12 @@ class Employer(db.Model):
     
     def __repr__(self):
         return f'<Employer {self.id} {self.name} {self.description}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'username': self.username,
+            # 'password': self.password, 
+            'description': self.description
+        }
