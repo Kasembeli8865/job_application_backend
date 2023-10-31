@@ -22,3 +22,17 @@ class Employee(db.Model):
         self.password = password
         self.skills = skills
         self.experience = experience
+
+    def __repr__(self):
+        return f'<Employee {self.id} {self.name} {self.email} {self.skills} {self.experience}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'username': self.username,
+            # 'password': self.password,
+            'skills': self.skills,
+            'experience': self.experience
+        }
