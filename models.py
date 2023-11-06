@@ -170,6 +170,16 @@ class Rating(db.Model):
         self.date = date
         self.employee = employee
         self.employer = employer
+
+    def __repr__(self):
+        return f'<Rating {self.id} {self.rating}>'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'rating': self.rating,
+            'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None
+        }
         
     
     
