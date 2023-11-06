@@ -196,6 +196,29 @@ class CompanyProfile(db.Model):
     address = db.Column(db.Text)
     primary_contact_email = db.Column(db.String)
     primary_contact_phone = db.Column(db.String)
-        
+
+
+    class EmployeeApplication(db.Model):
+        __tablename__ = 'employee_applications'
+
+        id = db.Column(db.Integer, primary_key=True)
+        job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'))
+        job = db.relationship('Job', backref='employee_applications')
+        employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
+        employee = db.relationship('Employee', backref='applications')
+        name = db.Column(db.String)
+        date_of_birth = db.Column(db.Date)
+        nationality = db.Column(db.String)
+        city = db.Column(db.String)
+        email = db.Column(db.String)
+        mobile = db.Column(db.String)
+        role = db.Column(db.String)
+        work_duration = db.Column(db.String)
+        work_location = db.Column(db.String)
+        work_description = db.Column(db.Text)
+        school = db.Column(db.String)
+        major = db.Column(db.String)
+        year_completed = db.Column(db.Integer)
+            
     
     
