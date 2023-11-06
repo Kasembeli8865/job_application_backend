@@ -113,3 +113,19 @@ class Employer(db.Model):
             'username': self.username,
             'description': self.description
         }
+    
+    class Job(db.Model):
+   
+        __tablename__ = 'jobs'
+
+        id = db.Column(db.Integer, primary_key=True) 
+        title = db.Column(db.String)
+        description = db.Column(db.Text)
+        salary = db.Column(db.Integer)
+        location = db.Column(db.String)
+        type = db.Column(db.String)
+        image = db.Column(db.String)
+        employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+        employer = db.relationship('Employer', backref='jobs')
+    
+    
