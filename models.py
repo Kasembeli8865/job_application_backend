@@ -87,3 +87,11 @@ class Employer(db.Model):
     password = db.Column(db.String)
     password_hash = db.Column(db.String)
     description = db.Column(db.Text)
+
+    def __init__(self, email, username, password, name=None, description=None):
+        self.name = name
+        self.username = username
+        self.email = email
+        self.description = description
+        self.password = password
+        self.password_hash = self._hash_password(password)
