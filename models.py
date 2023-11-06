@@ -164,6 +164,12 @@ class Rating(db.Model):
 
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
     employer = relationship('Employer', backref='received_ratings')
+
+    def __init__(self, rating, date, employee, employer):
+        self.rating = rating
+        self.date = date
+        self.employee = employee
+        self.employer = employer
         
     
     
