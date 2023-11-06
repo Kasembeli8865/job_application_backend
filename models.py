@@ -136,5 +136,22 @@ class Employer(db.Model):
             self.type = type
             self.image = image
             self.employer = employer
+        
+        def __repr__(self):
+            return f'<Job {self.id} {self.title}>'
+    
+        def to_dict(self):
+            return {
+                'id': self.id,
+                'title': self.title,
+                'description': self.description,
+                'salary': self.salary,
+                'location': self.location,
+                'type': self.type,
+                'employer': self.employer
+                # 'image': self.image
+            }
+
+        
     
     
