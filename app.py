@@ -60,7 +60,7 @@ def role_required(role):
                 return {'message': 'Unauthorized'}, 401
             return fn(args, **kwargs)
 
-    return decorator
+        return decorator
 
     return wrapper
 class EmployeeRegister(Resource):
