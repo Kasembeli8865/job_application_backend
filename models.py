@@ -30,3 +30,16 @@ class Employee(db.Model):
         self.password_hash = self._hash_password(password)
         self.skills = skills
         self.experience = experience
+
+    def __repr__(self):
+        return f'<Employee {self.id} {self.name} {self.username} {self.email} {self.skills} {self.password} {self.experience}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'username': self.username,
+            'email': self.email,
+            'skills': self.skills,
+            'experience': self.experience,
+        }
