@@ -21,3 +21,12 @@ class Employee(db.Model):
     password_hash = db.Column(db.String)
     skills = db.Column(db.String(300))
     experience = db.Column(db.Integer)
+
+    def __init__(self, email, username, password, name=None, skills=None, experience=None):
+        self.name = name
+        self.email = email
+        self.username = username
+        self.password = password
+        self.password_hash = self._hash_password(password)
+        self.skills = skills
+        self.experience = experience
