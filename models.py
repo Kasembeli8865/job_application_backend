@@ -102,3 +102,14 @@ class Employer(db.Model):
     
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash)
+    
+    def __repr__(self):
+        return f'<Employer {self.id} {self.name} {self.description}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'username': self.username,
+            'description': self.description
+        }
