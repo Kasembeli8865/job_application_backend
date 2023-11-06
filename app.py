@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from models import *
 import bcrypt
 
-app = Flask(name)
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://brayan:2vGSUcIdedE8SSyINO6cJhlz31APGbCE@dpg-cl37ci0t3kic73d8e7ag-a.oregon-postgres.render.com/skillhunter'
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
