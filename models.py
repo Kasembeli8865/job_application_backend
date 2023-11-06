@@ -51,3 +51,19 @@ class Employee(db.Model):
     
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash)
+    
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Name required')  
+        return name
+
+    @validates('email')
+    def validate_email(self, key, email):
+        if not email or not re.match(r'^[\w\.-]+@[\w\.-]+$', email):
+            raise AssertionError('Invalid email')
+        return email
+        
+    
+    
+        return password
