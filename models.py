@@ -19,7 +19,7 @@ class Employee(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80))
     password_hash = db.Column(db.String)
-    skills = db.Column(db.String(300))
+    skills = db.Column(db.JSON)
     experience = db.Column(db.Integer)
 
     def __init__(self, email, username, password, name=None, skills=None, experience=None):
@@ -115,42 +115,57 @@ class Employer(db.Model):
         }
     
 class Job(db.Model):
-   
-        __tablename__ = 'jobs'
+    __tablename__ = 'jobs'
 
-        id = db.Column(db.Integer, primary_key=True) 
-        title = db.Column(db.String)
-        description = db.Column(db.Text)
-        salary = db.Column(db.Integer)
-        location = db.Column(db.String)
-        type = db.Column(db.String)
-        image = db.Column(db.String)
-        employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
-        employer = db.relationship('Employer', backref='jobs')
-
-        def __init__(self, title, description, salary, location, type, image, employer):
-            self.title = title
-            self.description = description
-            self.salary = salary
-            self.location = location
-            self.type = type
-            self.image = image
-            self.employer = employer
-        
-        def __repr__(self):
-            return f'<Job {self.id} {self.title}>'
+    id = db.Column(db.Integer, primary_key=True) 
+    title = db.Column(db.String)
+    description = db.Column(db.Text)
+    salary = db.Column(db.Integer)
+    location = db.Column(db.String)
+    type = db.Column(db.String)
+    image = db.Column(db.String)
     
-        def to_dict(self):
-            return {
-                'id': self.id,
-                'title': self.title,
-                'description': self.description,
-                'salary': self.salary,
-                'location': self.location,
-                'type': self.type,
-                'employer': self.employer
-                # 'image': self.image
+    # Add employer columns
+    employer_name = db.Column(db.String)
+    employer_username = db.Column(db.String)
+    employer_description = db.Column(db.Text)
+    
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+
+    def __init__(self, title, description, salary, location, type, image, employer):
+        self.title = title
+        self.description = description
+        self.salary = salary
+        self.location = location
+        self.type = type
+        self.image = image
+
+        # Set employer details
+        if employer:
+            self.employer_id = employer.id
+            self.employer_name = employer.name
+            self.employer_username = employer.username
+            self.employer_description = employer.description
+
+    def __repr__(self):
+        return f'<Job {self.id} {self.title}>'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'salary': self.salary,
+            'location': self.location,
+            'type': self.type,
+            'image': self.image,
+            'employer': {
+                'id': self.employer_id,
+                'name': self.employer_name,
+                'username': self.employer_username,
+                'description': self.employer_description
             }
+        }
 
 class Rating(db.Model):
     __tablename__ = 'ratings'
