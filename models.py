@@ -152,6 +152,18 @@ class Employer(db.Model):
                 # 'image': self.image
             }
 
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
+    employee = relationship('Employee', backref='given_ratings')
+
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    employer = relationship('Employer', backref='received_ratings')
         
     
     
