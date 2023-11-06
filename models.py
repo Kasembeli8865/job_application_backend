@@ -75,3 +75,15 @@ class Employee(db.Model):
         if not (8 <= len(password) <= 80):
             raise AssertionError('Password must be between 8 and 80 characters')
         return password
+    
+class Employer(db.Model):
+   
+    __tablename__ = 'employers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    username = db.Column(db.String)
+    email = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String)
+    password_hash = db.Column(db.String)
+    description = db.Column(db.Text)
