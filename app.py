@@ -3,14 +3,16 @@ from flask import Flask, request, make_response, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt, jwt_required, verify_jwt_in_request
 from flask_restful import Api, Resource, reqparse
 from datetime import datetime
+from flask_cors import CORS
 
 
 from models import *
 import bcrypt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lionel:ISg9eiTmGxnqGmF0y94ZDnuSZ3yLpdv1@dpg-cl4b07iuuipc738tolm0-a.oregon-postgres.render.com/skillhunter_2ycm'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+CORS(app)
 
 
 def get_access_token():
