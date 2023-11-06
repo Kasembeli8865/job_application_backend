@@ -63,7 +63,15 @@ class Employee(db.Model):
         if not email or not re.match(r'^[\w\.-]+@[\w\.-]+$', email):
             raise AssertionError('Invalid email')
         return email
-        
     
-    
+    @validates('username')
+    def validate_username(self, key, username):
+        if not username:
+            raise AssertionError('Username required')
+        return username
+  
+    @validates('password')
+    def validate_password(self, key, password):
+        if not (8 <= len(password) <= 80):
+            raise AssertionError('Password must be between 8 and 80 characters')
         return password
