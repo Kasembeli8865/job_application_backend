@@ -180,6 +180,22 @@ class Rating(db.Model):
             'rating': self.rating,
             'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None
         }
+    
+class CompanyProfile(db.Model):
+    __tablename__ = 'company_profiles'
+
+    id = db.Column(db.Integer, primary_key=True)
+    employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    employer = db.relationship('Employer', backref='company_profile')
+    business_industry = db.Column(db.String)
+    employee_size = db.Column(db.String)
+    base_currency = db.Column(db.String)
+    continent = db.Column(db.String)
+    country = db.Column(db.String)
+    city = db.Column(db.String)
+    address = db.Column(db.Text)
+    primary_contact_email = db.Column(db.String)
+    primary_contact_phone = db.Column(db.String)
         
     
     
