@@ -9,6 +9,8 @@ faker = "*"
 flask-sqlalchemy = "*"
 flask-restful = "*"
 flask-jwt-extended = "*"
+wtforms = "*"
+bcrypt = "*"
 
 [dev-packages]
 
