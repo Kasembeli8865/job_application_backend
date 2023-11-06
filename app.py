@@ -4,9 +4,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt, jwt_req
 from flask_restful import Api, Resource, reqparse
 from datetime import datetime
 
-from flask_uploads import UploadSet, configure_uploads, IMAGES
-from flask_wtf.csrf import CSRFProtect
-from werkzeug.utils import secure_filename
+
 from models import *
 import bcrypt
 
@@ -14,10 +12,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-uploaded_documents = UploadSet('documents', extensions=('pdf', 'doc', 'docx', 'txt'))
-app.config['UPLOADED_DOCUMENTS_DEST'] = 'path_to_upload_folder' # to replace with the actual folder path on render
-app.config['UPLOADED_DOCUMENTS_URL'] = 'url_to_upload_folder' # to replace with the actual folder path on render
-configure_uploads(app, uploaded_documents)
+
 def get_access_token():
     auth_header = request.headers.get("Authorization")
     print("Authorization Header:", auth_header)   ##check if auth header is retrieved
@@ -279,13 +274,13 @@ api.add_resource(EmployeeResource, '/employees')
 
 class EmployeeById(Resource):
 
-  def get(self, employee_id):
+    def get(self, employee_id):
       employee = Employee.query.get(employee_id)
       if employee:
           return employee.to_dict()
       return {'error': 'Employee not found'}, 404
 
-  def patch(self, employee_id):
+    def patch(self, employee_id):
       employee = Employee.query.get(employee_id)
       if employee:
           for key, value in request.get_json().items():
@@ -293,31 +288,31 @@ class EmployeeById(Resource):
           db.session.commit()
           return employee.to_dict()
       return {'error': 'Employee not found'}, 404
-  api.add_resource(EmployeeById, '/employees/<int:employee_id>')
+api.add_resource(EmployeeById, '/employees/<int:employee_id>')
 
 class EmployerResource(Resource):
 
-  def get(self):
+    def get(self):
       employers = Employer.query.all()
       return {'employers': [e.to_dict() for e in employers]}
 
-  def post(self):
+    def post(self):
       data = request.get_json()
       new_employer = Employer(**data)
       db.session.add(new_employer)
       db.session.commit()
       return new_employer.to_dict(), 201
-  api.add_resource(EmployerResource, '/employers')
+api.add_resource(EmployerResource, '/employers')
 
 class EmployerById(Resource):
 
-    def get(self, employer_id):
+      def get(self, employer_id):
         employer = Employer.query.get(employer_id)
         if employer:
             return employer.to_dict()
         return {'error': 'Employer not found'}, 404
 
-    def patch(self, employer_id):
+      def patch(self, employer_id):
         employer = Employer.query.get(employer_id)
         if employer:
             for key, value in request.get_json().items():
@@ -325,62 +320,59 @@ class EmployerById(Resource):
             db.session.commit()
             return employer.to_dict()
         return {'error': 'Employer not found'}, 404
-    api.add_resource(EmployerById, '/employers/<int:employer_id>')
+api.add_resource(EmployerById, '/employers/<int:employer_id>')
 
 class JobResource(Resource):
-
-    def get(self):
+      def get(self):
         jobs = Job.query.all()
         return {'jobs': [j.to_dict() for j in jobs]}
 
-    @role_required('employer')
-    def post(self):
+      @role_required('employer')
+      def post(self):
         data = request.get_json()
         new_job = Job(**data)
         db.session.add(new_job)
         db.session.commit()
         return new_job.to_dict(), 201
-    api.add_resource(JobResource, '/jobs')
+api.add_resource(JobResource, '/jobs')
 
 class JobById(Resource):
-
-    def get(self, job_id):
+      def get(self, job_id):
         job = Job.query.get(job_id)
         if job:
             return job.to_dict()
         return {'error': 'Job not found'}, 404
 
-    @role_required('employer')
-    def patch(self, job_id):
+      @role_required('employer')
+      def patch(self, job_id):
         job = Job.query.get(job_id)
         if job:
             return job.to_dict()
         return {'error': 'Job not found'}, 404
 
-    @role_required('employer')
-    def delete(self, job_id):
+      @role_required('employer')
+      def delete(self, job_id):
         job = Job.query.get(job_id)
         if job:
             db.session.delete(job)
             db.session.commit()
             return {'deleted': True}
         return {'error': 'Job not found'}, 404
-    api.add_resource(JobById, '/jobs/<int:job_id>')
+api.add_resource(JobById, '/jobs/<int:job_id>')
 
 class RatingResource(Resource):
-
-    def get(self):
+      def get(self):
         ratings = Rating.query.all()
         return {'ratings': [r.to_dict() for r in ratings]}
 
-    def post(self):
+      def post(self):
         data = request.get_json()
         data['date'] = datetime.now()
         new_rating = Rating(**data)
         db.session.add(new_rating)
         db.session.commit()
         return new_rating.to_dict(), 201
-    api.add_resource(RatingResource, '/ratings')
+api.add_resource(RatingResource, '/ratings')
 
 class RatingByID(Resource):
     def get(self, id):
@@ -421,5 +413,5 @@ class RatingByID(Resource):
             200,
         )
 
-        return reponse
+        return response
 api.add_resource(RatingByID, '/ratings/<int:id>')  
