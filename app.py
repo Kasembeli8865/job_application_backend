@@ -12,7 +12,10 @@ import bcrypt
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://lionel:ISg9eiTmGxnqGmF0y94ZDnuSZ3yLpdv1@dpg-cl4b07iuuipc738tolm0-a.oregon-postgres.render.com/skillhunter_2ycm'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+<<<<<<< HEAD
 CORS(app)
+=======
+>>>>>>> development
 
 
 def get_access_token():
