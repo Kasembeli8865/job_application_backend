@@ -1,3 +1,4 @@
+from base64 import b64encode
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from wtforms import  fields, validators 
@@ -21,6 +22,7 @@ class Employee(db.Model):
     password_hash = db.Column(db.String)
     skills = db.Column(db.String(300))
     experience = db.Column(db.Integer)
+    avatar = db.Column(db.String(255))
 
     def __init__(self, email, username, password, name=None, skills=None, experience=None):
         self.name = name
@@ -42,6 +44,7 @@ class Employee(db.Model):
             'email': self.email,
             'skills': self.skills,
             'experience': self.experience,
+            'avatar': self.avatar
         }
     
 
@@ -148,8 +151,9 @@ class Employer(db.Model):
                 'salary': self.salary,
                 'location': self.location,
                 'type': self.type,
-                'employer': self.employer
-                # 'image': self.image
+                'employer': self.employer,
+                'employer': self.employer.to_dict() if self.employer else None,
+                'image': b64encode(self.image).decode('utf-8') if self.image else None 
             }
 
 class Rating(db.Model):
@@ -196,6 +200,21 @@ class CompanyProfile(db.Model):
     address = db.Column(db.Text)
     primary_contact_email = db.Column(db.String)
     primary_contact_phone = db.Column(db.String)
+
+    def to_dict(self):
+        return {
+        'id': self.id,
+        'employer_id': self.employer_id,
+        'business_industry': self.business_industry,
+        'employee_size': self.employee_size, 
+        'base_currency': self.base_currency,
+        'continent': self.continent,
+        'country': self.country,
+        'city': self.city,
+        'address': self.address,
+        'primary_contact_email': self.primary_contact_email,
+        'primary_contact_phone': self.primary_contact_phone
+        }
 
 
     class EmployeeApplication(db.Model):
