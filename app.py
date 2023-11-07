@@ -3,23 +3,18 @@ from flask import Flask, request, make_response, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt, jwt_required, verify_jwt_in_request
 from flask_restful import Api, Resource, reqparse
 from datetime import datetime
-
-from flask_uploads import UploadSet, configure_uploads, IMAGES
-from flask_wtf.csrf import CSRFProtect
-from werkzeug.utils import secure_filename
+from flask_cors import CORS
 from models import *
 import bcrypt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://brayan:2vGSUcIdedE8SSyINO6cJhlz31APGbCE@dpg-cl37ci0t3kic73d8e7ag-a.oregon-postgres.render.com/skillhunter'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko'
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-uploaded_documents = UploadSet('documents', extensions=('pdf', 'doc', 'docx', 'txt'))
-app.config['UPLOADED_DOCUMENTS_DEST'] = 'path_to_upload_folder' # to replace with the actual folder path on render
-app.config['UPLOADED_DOCUMENTS_URL'] = 'url_to_upload_folder' # to replace with the actual folder path on render
-configure_uploads(app, uploaded_documents)
+
+CORS(app)
 def get_access_token():
     auth_header = request.headers.get("Authorization")
     print("Authorization Header:", auth_header)   ##check if auth header is retrieved
@@ -28,6 +23,7 @@ def get_access_token():
       return auth_header[7:]
     else:
       return None
+    
 api = Api(app)
 db.init_app(app)
 from flask_migrate import Migrate
@@ -67,9 +63,10 @@ def role_required(role):
                 return {'message': 'Unauthorized'}, 401
             return fn(args, **kwargs)
 
-    return decorator
+        return decorator
 
     return wrapper
+
 class EmployeeRegister(Resource):
     def post(self):
         data = request.get_json()
@@ -92,6 +89,7 @@ class EmployeeRegister(Resource):
         db.session.add(employee)
         db.session.commit()
         return {'message': 'Employee created'}, 201
+    
 class EmployerRegister(Resource):
     def post(self):
         data = request.get_json()
@@ -114,6 +112,7 @@ class EmployerRegister(Resource):
         db.session.add(employer)
         db.session.commit()
         return {'message': 'Employer created'}, 201
+    
 class EmployeeLogin(Resource):
     def post(self):
         data = request.get_json()
@@ -131,6 +130,7 @@ class EmployeeLogin(Resource):
             return {'access_token': access_token}
 
         return {'error': 'Invalid credentials'}, 401
+    
 class EmployerLogin(Resource):
     def post(self):
         data = request.get_json()
@@ -148,6 +148,7 @@ class EmployerLogin(Resource):
             return {'access_token': access_token}
 
         return {'error': 'Invalid credentials'}, 401
+    
 def find_employee(email, username):
     if email:
         return Employee.query.filter_by(email=email).first()
@@ -155,32 +156,107 @@ def find_employee(email, username):
         return Employee.query.filter_by(username=username).first()
     return None
 
+class EmployeeSearchResource(Resource):
+    def get(self):
+        email = request.args.get('email')
+        username = request.args.get('username')
+        
+        if not email and not username:
+            return {'error': 'Email or username is required for the search'}, 400
+
+        employee = find_employee(email, username)
+
+        if employee:
+            return employee.to_dict()
+
+        return {'error': 'Employee not found'}, 404
+    
+
 def find_employer(email, username):
     if email:
         return Employer.query.filter_by(email=email).first()
     elif username:
         return Employer.query.filter_by(username=username).first()
     return None
+
+class EmployerSearchResource(Resource):
+    def get(self):
+        email = request.args.get('email')
+        username = request.args.get('username')
+
+        if not email and not username:
+            return {'error': 'Email or username is required for the search'}, 400
+
+        employer = find_employer(email, username)
+
+        if employer:
+            return employer.to_dict()
+
+        return {'error': 'Employer not found'}, 404
+    
 api.add_resource(EmployeeRegister, '/employees/register')
 api.add_resource(EmployerRegister, '/employers/register')
 api.add_resource(EmployeeLogin, '/employees/login')
 api.add_resource(EmployerLogin, '/employers/login')
+api.add_resource(EmployeeSearchResource, '/employees/search')
+api.add_resource(EmployerSearchResource, '/employers/search')
 
+
+class CompanyProfileResource(Resource):
+    def get(self, employer_id):
+        employer = Employer.query.get(employer_id)
+        if not employer:
+            return {'error': 'Employer not found'}, 404
+
+        if not employer.company_profile:
+            return {'error': 'Company profile not found for this employer'}, 404
+
+        # Access the first (and only) company profile in the list and convert it to a dictionary
+        company_profile = employer.company_profile[0].to_dict()
+
+        return company_profile
+
+api.add_resource(CompanyProfileResource, '/employers/<int:employer_id>/company_profile')
+
+
+class EmployerApplicantsResource(Resource):
+    @jwt_required()
+    def get(self, employer_id):
+        employer = Employer.query.get(employer_id)
+        if not employer:
+            return {'error': 'Employer not found'}, 404
+
+        jobs = Job.query.filter_by(employer_id=employer_id).all()
+        if not jobs:
+            return {'applicants': []}
+
+        applicants = []
+        for job in jobs:
+            job_applications = EmployeeApplication.query.filter_by(job_id=job.id).all()
+            for application in job_applications:
+                applicants.append(application.to_dict())
+
+        return {'applicants': applicants}
+
+api.add_resource(EmployerApplicantsResource, '/employers/<int:employer_id>/applicants')
+       
+       
           ######################Resource for employers to post jobs##########################
 class JobPostResource(Resource):
+    @jwt_required()
     def post(self):
         form = JobForm()
         parser = reqparse.RequestParser()
         parser.add_argument('access_token', type=str, location='headers')  # You may need to adjust this header
         args = parser.parse_args()
 
-    # print("Access Token:", args['access_token'])  # check if access token is returned
+        # print("Access Token:", args['access_token'])  # check if access token is returned
 
         if not args['access_token']:
             return {'error': 'Access token is required'}, 400
 
         current_user = get_current_user(args['access_token'])
-
+        print("current user", current_user)
         if not current_user:
             return {'error': 'Invalid access token'}, 401
 
@@ -188,14 +264,15 @@ class JobPostResource(Resource):
             return {'error': 'Only employers can post jobs'}, 403
 
         if form.validate():
-                ##################Process form data and save the job to the database########################
+                 ##################Process form data and save the job to the database########################
             new_job = Job(
                 title=form.title.data,
                 description=form.description.data,
                 salary=form.salary.data,
                 location=form.location.data,
                 type=form.type.data,
-                image=form.image.data.read() if form.image.data else None
+                image=form.image.data.read() if form.image.data else None,
+                employer=current_user 
             )
             db.session.add(new_job)
             db.session.commit()
@@ -255,6 +332,7 @@ class EmployeeApplicationResource(Resource):
 
         except Exception as e:
             return {'error': 'Error submitting the application'}, 500
+        
 api.add_resource(JobPostResource, '/employers/post_job')
 api.add_resource(EmployeeApplicationResource, '/employees/apply/<int:job_id>')
 
@@ -295,7 +373,8 @@ class EmployeeById(Resource):
           db.session.commit()
           return employee.to_dict()
       return {'error': 'Employee not found'}, 404
-  api.add_resource(EmployeeById, '/employees/<int:employee_id>')
+  
+api.add_resource(EmployeeById, '/employees/<int:employee_id>')
 
 class EmployerResource(Resource):
 
@@ -309,7 +388,8 @@ class EmployerResource(Resource):
       db.session.add(new_employer)
       db.session.commit()
       return new_employer.to_dict(), 201
-  api.add_resource(EmployerResource, '/employers')
+  
+api.add_resource(EmployerResource, '/employers')
 
 class EmployerById(Resource):
 
@@ -327,7 +407,8 @@ class EmployerById(Resource):
             db.session.commit()
             return employer.to_dict()
         return {'error': 'Employer not found'}, 404
-    api.add_resource(EmployerById, '/employers/<int:employer_id>')
+    
+api.add_resource(EmployerById, '/employers/<int:employer_id>')
 
 class JobResource(Resource):
 
@@ -342,7 +423,8 @@ class JobResource(Resource):
         db.session.add(new_job)
         db.session.commit()
         return new_job.to_dict(), 201
-    api.add_resource(JobResource, '/jobs')
+    
+api.add_resource(JobResource, '/jobs')
 
 class JobById(Resource):
 
@@ -367,7 +449,8 @@ class JobById(Resource):
             db.session.commit()
             return {'deleted': True}
         return {'error': 'Job not found'}, 404
-    api.add_resource(JobById, '/jobs/<int:job_id>')
+    
+api.add_resource(JobById, '/jobs/<int:job_id>')
 
 class RatingResource(Resource):
 
@@ -382,7 +465,8 @@ class RatingResource(Resource):
         db.session.add(new_rating)
         db.session.commit()
         return new_rating.to_dict(), 201
-    api.add_resource(RatingResource, '/ratings')
+    
+api.add_resource(RatingResource, '/ratings')
 
 class RatingByID(Resource):
     def get(self, id):
@@ -424,6 +508,7 @@ class RatingByID(Resource):
         )
 
         return response
+    
 api.add_resource(RatingByID, '/ratings/<int:id>')
 
 with app.app_context():
