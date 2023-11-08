@@ -8,12 +8,12 @@ from models import *
 import bcrypt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ="postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko"
+app.config['SQLALCHEMY_DATABASE_URI'] ="sqlite:///database.db"
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
+#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
 def get_access_token():
     auth_header = request.headers.get("Authorization")
@@ -127,7 +127,7 @@ class EmployeeLogin(Resource):
 
         if employee and bcrypt.checkpw(password.encode('utf-8'), employee.password.encode('utf-8')):
             access_token = create_access_token(identity=employee)
-            return {'access_token': access_token}
+            return {'access_token': access_token, 'email': employee.email, 'username': employee.username, 'id': employee.id}
 
         return {'error': 'Invalid credentials'}, 401
 
@@ -145,9 +145,10 @@ class EmployerLogin(Resource):
 
         if employer and bcrypt.checkpw(password.encode('utf-8'), employer.password.encode('utf-8')):
             access_token = create_access_token(identity=employer)
-            return {'access_token': access_token}
+            return {'access_token': access_token, 'email': employer.email, 'username': employer.username, 'id': employer.id}
 
         return {'error': 'Invalid credentials'}, 401
+
 
 def find_employee(email, username):
     if email:
