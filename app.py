@@ -12,10 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] ="postgres://skillhunter:AAl15UpE0pn5nZYm0
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-<<<<<<< HEAD
-CORS(app)
-=======
->>>>>>> development
 
 
 CORS(app)
