@@ -1,3 +1,4 @@
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from base64 import b64encode
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
@@ -20,11 +21,11 @@ class Employee(db.Model):
     password_hash = db.Column(db.String)
     skills = db.Column(db.String(300))
     experience = db.Column(db.Integer)
-    avatar = db.Column(db.String(255))
+    image = db.Column(db.String(255))
 
 
     def __repr__(self):
-        return f'<Employee {self.id} {self.name} {self.username} {self.email} {self.skills} {self.password} {self.experience}>'
+        return f'<Employee {self.id} {self.name} {self.username} {self.email} {self.skills} {self.password} {self.experience} {self.image}>'
     
     def to_dict(self):
         return {
@@ -34,7 +35,7 @@ class Employee(db.Model):
             'email': self.email,
             'skills': self.skills,
             'experience': self.experience,
-             'avatar': self.avatar
+            'image': self.image 
         }
     
     def _hash_password(self, password):
@@ -124,7 +125,7 @@ class Job(db.Model):
     salary = db.Column(db.Integer)
     location = db.Column(db.String)
     type = db.Column(db.String)
-    image = db.Column(db.String)
+    image = db.Column(db.String) 
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
     employer = db.relationship('Employer', backref='jobs')
 
@@ -149,7 +150,7 @@ class Job(db.Model):
             'location': self.location,
             'type': self.type,
             'employer': self.employer.to_dict() if self.employer else None,
-            'image': b64encode(self.image).decode('utf-8') if self.image else None 
+           'image': self.image 
         }
 
 class Rating(db.Model):
@@ -160,14 +161,13 @@ class Rating(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
-    employee = relationship('Employee', backref='given_ratings')
+    employee = db.relationship('Employee', backref='given_ratings')
 
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
-    employer = relationship('Employer', backref='received_ratings')
+    employer = db.relationship('Employer', backref='received_ratings')
 
-    def __init__(self, rating, date, employee, employer):
+    def __init__(self, rating, employee, employer):
         self.rating = rating
-        self.date = date
         self.employee = employee
         self.employer = employer
 
@@ -180,6 +180,7 @@ class Rating(db.Model):
             'rating': self.rating,
             'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None
         }
+
     
 
 class CompanyProfile(db.Model):
