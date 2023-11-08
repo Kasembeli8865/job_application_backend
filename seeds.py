@@ -1,70 +1,729 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import validates
-from faker import Faker
-from models import Employee, Employer, Job, Rating
-from random import randint
-from datetime import datetime, timedelta
-import json
+from datetime import datetime
+from app import *
+from models import Employee, Employer, Job, Rating, EmployeeApplication, CompanyProfile
 
-app = Flask(__name__)
+current_date = datetime.now()
+# Employees
+with app.app_context():
+    employee_data = {
+        "1": {
+            "name": "Emily Johnson",
+            "email": "emily.johnson@emailprovider.com",
+            "username": "emilyj23",
+            "password": "qwerty",
+            "skills": "Software Development, Java, Database Management",
+            "experience": 3,
+            "image": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfDB8MHx8fDA%3D",
+        },
+        "2": {
+            "name": "Michael Carter",
+            "email": "michael.carter@emailprovider.com",
+            "username": "mikecarter78",
+            "password": "qwerty",
+            "skills": "Marketing Strategy, Social Media Marketing, Market Research",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFuJTIwcG9ydHJhaXR8ZW58MHwwfDB8fHww",
+        },
+        "3": {
+            "name": "Sophia Anderson",
+            "email": "sophia.anderson@emailprovider.com",
+            "username": "sophiaa19",
+            "password": "qwerty",
+            "skills": "Graphic Design, Adobe Creative Suite, Web Design",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1613290973355-e3dd79b45de6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d29tYW4lMjBwb3J0cmFpdHxlbnwwfDB8MHx8fDA%3D",
+        },
+        "4": {
+            "name": "Daniel Martinez",
+            "email": "daniel.martinez@emailprovider.com",
+            "username": "danmartinez87",
+            "password": "qwerty",
+            "skills": "Project Management, Team Leadership, Agile Methodology",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1615208429553-d9982932ca5c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bWFuJTIwcG9ydHJhaXR8ZW58MHwwfDB8fHww",
+        },
+        "5": {
+            "name": "Olivia Taylor",
+            "email": "olivia.taylor@emailprovider.com",
+            "username": "oltaylor",
+            "password": "qwerty",
+            "skills": "Content Writing, SEO Optimization, Blog Management",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfDB8MHx8fDA%3D",
+        },
+        "6": {
+            "name": "Benjamin Clark",
+            "email": "benjamin.clark@emailprovider.com",
+            "username": "bclark35",
+            "password": "qwerty",
+            "skills": "Data Analysis, Excel, Statistical Modeling",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fG1hbiUyMHBvcnRyYWl0fGVufDB8MHwwfHx8MA%3D%3D",
+        },
+        "7": {
+            "name": "Ava Wilson",
+            "email": "ava.wilson@emailprovider.com",
+            "username": "avawilson22",
+            "password": "password2",
+            "skills": "Customer Service, Communication, Problem Solving",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d29tYW4lMjBwb3J0cmFpdHxlbnwwfDB8MHx8fDA%3D",
+        },
+        "8": {
+            "name": "Liam Robinson",
+            "email": "liam.robinson@emailprovider.com",
+            "username": "liam.robinson@emailprovider.com",
+            "password": "qwerty",
+            "skills": "Financial Analysis, Budgeting, Forecasting",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1534399315465-2b91232de345?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG1hbiUyMHBvcnRyYWl0fGVufDB8MHwwfHx8MA%3D%3D",
+        },
+        "9": {
+            "name": "Mia Garcia",
+            "email": "mia.garcia@emailprovider.com",
+            "username": "mia.garcia@emailprovider.com",
+            "password": "qwerty",
+            "skills": "Human Resources, Recruitment, Employee Relations",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1603988089669-c041ac2fe196?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHdvbWFuJTIwcG9ydHJhaXR8ZW58MHwwfDB8fHww",
+        },
+        "10": {
+            "name": "William Davis",
+            "email": "william.davis@emailprovider.com",
+            "username": "willdavis42",
+            "password": "qwerty",
+            "skills": "Culinary Arts, Food Preparation, Menu Design",
+            "experience": 5,
+            "image": "https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG1hbiUyMHBvcnRyYWl0fGVufDB8MHwwfHx8MA%3D%3D",
+        },
+    }
 
-# Update your app.config with your database configuration here
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-fake= Faker()
-
-def create_employees(num_employees):
-    for _ in range(num_employees):
+    for employee_id, employee_info in employee_data.items():
         employee = Employee(
-            name=fake.name(),
-            email=fake.email(),
-            user_name=fake.user_name(),  # Change to user_name
-            password=fake.password(),
-            skills=json.dumps(fake.words(nb=randint(1, 5))),
-            experience=randint(0, 10)
+            name=employee_info["name"],
+            email=employee_info["email"],
+            username=employee_info["username"],
+            # password=Employee._hash_password(employee_info['password']),  # Hash the password
+            skills=employee_info["skills"],
+            experience=employee_info["experience"],
+            image=employee_info["image"],
         )
+        employee.password_hash = employee._hash_password(employee_info["password"])
         db.session.add(employee)
 
-def create_employers(num_employers):
-    for _ in range(num_employers):
+    # Employers
+    employer_data = {
+        "1": {
+            "name": "BrightSolutions, Inc",
+            "username": "brightsolutions",
+            "email": "info@brightsolutions.com",
+            "password": "employer_password1",  
+            "description": "BrightSolutions, Inc is a leading technology company specializing in software development and innovative solutions. We pride ourselves on delivering cutting-edge software products that empower businesses to thrive in the digital age.",
+        },
+        "2": {
+            "name": "EliteTech Services",
+            "username": "elitetech",
+            "email": "contact@elitetechservices.net",
+            "password": "employer_password2",  
+            "description": "EliteTech Services is a dynamic IT service provider dedicated to delivering top-notch technology solutions. With a focus on excellence and customer satisfaction, we strive to provide businesses with the elite technology services they deserve.",
+        },
+        "3": {
+            "name": "GreenHarbor Ventures",
+            "username": "greenharbor",
+            "email": "support@greenharborventures.com",
+            "password": "employer_password2",  
+            "description": "GreenHarbor Ventures is a venture capital firm committed to supporting and investing in sustainable and environmentally friendly startups. We believe in a greener and more sustainable future for businesses and the planet.",
+        },
+        "4": {
+            "name": "RedSky Marketing",
+            "username": "redskymarketing",
+            "email": "inquiries@redskymarketing.co",
+            "password": "employer_password2",  
+            "description": "RedSky Marketing is a full-service marketing agency that specializes in delivering creative and effective marketing solutions. Our team is dedicated to helping businesses reach new heights in their marketing endeavors.",
+        },
+        "5": {
+            "name": "BlueWave Innovations",
+            "username": "bluewavebiz",
+            "email": "info@bluewaveinnovations.com",
+            "password": "employer_password2",  
+            "description": "BlueWave Innovations is an innovation-driven company that focuses on developing cutting-edge technologies and solutions. We are committed to pushing the boundaries of what is possible in the tech world.",
+        },
+        "6": {
+            "name": "SilverLine Logistics",
+            "username": "silverlogistics",
+            "email": "contact@silverlinelogistics.net",
+            "password": "employer_password2",  
+            "description": "SilverLine Logistics is a logistics and transportation company that provides efficient and reliable services. We are dedicated to ensuring that goods and products reach their destinations safely and on time.",
+        },
+        "7": {
+            "name": "TechFusion Solutions",
+            "username": "techfusion",
+            "email": "support@techfusionsolutions.com",
+            "password": "employer_password2",  
+            "description": "TechFusion Solutions is a technology consulting firm that specializes in helping businesses integrate and leverage cutting-edge technology for growth and efficiency. We are your partners in tech success.",
+        },
+        "8": {
+            "name": "Oakwood Financial Group",
+            "username": "oakwoodfinance",
+            "email": "info@oakwoodfinancialgroup.comm",
+            "password": "employer_password2", 
+            "description": "Oakwood Financial Group is a financial services company offering a wide range of financial planning and investment solutions. We are dedicated to helping our clients achieve their financial goals.",
+        },
+        "9": {
+            "name": "PacificPulse Media",
+            "username": "pacificmedia",
+            "email": "inquiries@pacificpulsemedia.com",
+            "password": "employer_password2",  
+            "description": "PacificPulse Media is a media and entertainment company that creates and delivers engaging content across various platforms. We are passionate about telling compelling stories and connecting with audiences.",
+        },
+        "10": {
+            "name": "GoldenGate Technologies",
+            "username": "goldengate",
+            "email": "contact@goldengatetech.net",
+            "password": "employer_password2",  
+            "description": "GoldenGate Technologies is a technology solutions provider that builds the bridge to your digital future. We are dedicated to delivering innovative and transformative tech solutions that make a difference.",
+        },
+    }
+
+    for employer_id, employer_info in employer_data.items():
         employer = Employer(
-            name=fake.company(),
-            description=fake.text(),
-            user_name=fake.user_name(),  # Use the user_name() method
-            password="your_custom_password_logic",  # Replace with your password logic
+            name=employer_info["name"],
+            username=employer_info["username"],
+            email=employer_info["email"],
+            password=employer_info["password"],  # Use the plain password here
+            description=employer_info["description"],
         )
+        employer.password = employer._hash_password(
+            employer_info["password"]
+        )  # Hash the password
         db.session.add(employer)
-def create_jobs(num_jobs):
-    for _ in range(num_jobs):
+
+    # Jobs
+    job_data = {
+        "1": {
+            "title": "Software Developer",
+            "description": "We are seeking a skilled Software Developer to join our team at BrightSolutions, Inc. If you have a passion for technology and a desire to create innovative software solutions, we want to hear from you. Join us and be part of a dynamic and forward-thinking company.",
+            "salary": 75000,
+            "location": "San Francisco, CA",
+            "type": "Full-time",
+            "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dGVjaCUyMGxvZ298ZW58MHwwfDB8fHww",
+            "employer": {"id": "1", "name": "BrightSolutions, Inc"},
+        },
+        "2": {
+            "title": "Marketing Manager",
+            "description": "EliteTech Services is looking for a Marketing Manager to lead our marketing efforts. If you are a creative and results-driven marketer with a passion for technology, we want you on our team. Join us to drive our marketing strategies to new heights.",
+            "salary": 80000,
+            "location": "New York, NY",
+            "type": "Full-time",
+            "image": "https://images.unsplash.com/photo-1569605803663-e9337d901ff9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDF8fHRlY2glMjBsb2dvfGVufDB8MHwwfHx8MA%3D%3D",
+            "employer": {"id": "2", "name": "EliteTech Services"},
+        },
+        "3": {
+            "title": "Graphic Designer",
+            "description": "Join the creative team at BlueWave Innovations! We are looking for a talented Graphic Designer with a flair for design and a strong command of design tools. Be part of our innovative projects and make your mark in the design world.",
+            "salary": 60000,
+            "location": "Los Angeles, CA",
+            "type": "Full-time",
+            "image": "https://images.unsplash.com/photo-1446776709462-d6b525c57bd3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8ODh8fHRlY2glMjBsb2dvfGVufDB8MHwwfHx8MA%3D%3D",
+            "employer": {"id": "5", "name": "BlueWave Innovations"},
+        },
+        "4": {
+            "title": "Project Manager",
+            "description": "Are you a seasoned Project Manager with a knack for leadership and problem-solving? RedSky Marketing is hiring and looking for someone just like you. Lead our projects and take marketing campaigns to the next level.",
+            "salary": 85000,
+            "location": "Chicago, IL",
+            "type": "Full-time",
+            "image": "https://images.unsplash.com/photo-1497005367839-6e852de72767?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzd8fG1hcmtldGluZyUyMGNvbXBhbnklMjBsb2dvfGVufDB8MHwwfHx8MA%3D%3D",
+            "employer": {"id": "4", "name": "RedSky Marketing"},
+        },
+        "5": {
+            "title": "Content Writer",
+            "description": "Join our content team at SilverLine Logistics and put your writing skills to work. We are looking for a Content Writer to create engaging content and help tell our story. If you love words, we want to hear from you.",
+            "salary": 55000,
+            "location": "Houston, TX",
+            "type": "Full-time",
+            "image": "https://images.unsplash.com/photo-1590140297846-fa479ed30a6b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjV8fGxvZ2lzdGljcyUyMGxvZ298ZW58MHwwfDB8fHww",
+            "employer": {"id": "6", "name": "SilverLine Logistics"},
+        },
+        "6": {
+            "title": "Data Analyst",
+            "description": "TechFusion Solutions is seeking a Data Analyst to work on challenging data analysis projects. If you have a passion for data and insights, this is the place to be. Join us and make a difference with your data skills.",
+            "salary": 70000,
+            "location": "San Francisco, CA",
+            "type": "Full-time",
+            "image": "job_image_link_6.jpg",
+            "employer": {"id": "7", "name": "TechFusion Solutions"},
+        },
+        "7": {
+            "title": "Financial Analyst",
+            "description": "Join the finance team at Oakwood Financial Group and help clients achieve their financial goals. We are looking for a Financial Analyst with expertise in budgeting and forecasting. Your financial skills are in high demand here.",
+            "salary": 75000,
+            "location": "New York, NY",
+            "type": "Full-time",
+            "image": "job_image_link_7.jpg",
+            "employer": {"id": "8", "name": "Oakwood Financial Group"},
+        },
+        "8": {
+            "title": "Media Producer",
+            "description": "PacificPulse Media is hiring a Media Producer to create captivating content. If you have a passion for storytelling and media production, this is the place for you. Join us and be part of our media creation journey.",
+            "salary": 60000,
+            "location": "Los Angeles, CA",
+            "type": "Full-time",
+            "image": "job_image_link_8.jpg",
+            "employer": {"id": "9", "name": "PacificPulse Media"},
+        },
+        "9": {
+            "title": "Software Engineer",
+            "description": "GoldenGate Technologies is seeking a skilled Software Engineer to help build transformative tech solutions. If you have a passion for coding and innovation, join us and be part of a team shaping the future of technology.",
+            "salary": 80000,
+            "location": "San Francisco, CA",
+            "type": "Full-time",
+            "image": "job_image_link_9.jpg",
+            "employer": {"id": "10", "name": "GoldenGate Technologies"},
+        },
+        "10": {
+            "title": "HR Specialist",
+            "description": "Join the HR team at GreenHarbor Ventures and contribute to a more sustainable future. We are looking for an HR Specialist with a passion for supporting eco-conscious startups. Be part of a team making a difference.",
+            "salary": 65000,
+            "location": "Seattle, WA",
+            "type": "Full-time",
+            "image": "job_image_link_10.jpg",
+            "employer": {"id": "3", "name": "GreenHarbor Ventures"},
+        },
+    }
+
+    for job_id, job_info in job_data.items():
+        employer_id = job_info["employer"]["id"]
         job = Job(
-            title=fake.job(),
-            description=fake.text(),
-            location=fake.city(),
-            type=fake.random_element(elements=("Full-time", "Part-time", "Contract"))
+            title=job_info["title"],
+            description=job_info["description"],
+            salary=job_info["salary"],
+            location=job_info["location"],
+            type=job_info["type"],
+            image=job_info["image"],
+            employer=Employer.query.get(employer_id),
         )
         db.session.add(job)
 
-def create_ratings(num_ratings):
-    for _ in range(num_ratings):
+    # Employee Applications
+    employee_application_data = {
+        "1": {
+            "name": "Alice Johnson",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1990-05-20", "%Y-%m-%d"),
+            "nationality": "United States",
+            "city": "New York, NY",
+            "email": "alice.j@example.com",
+            "role": "Software Developer",
+            "work_duration": "7 years",
+            "work_location": "San Francisco, CA",
+            "work_description": "Led development teams and delivered high-quality software solutions.",
+            "school": "Tech University",
+            "major": "Computer Science",
+            "year_completed": 2014,
+            "job": {"id": "1", "title": "Software Developer"},
+            "employee": {"id": "1", "name": "BrightSolutions, Inc"},
+        },
+        "2": {
+            "name": "David Kim",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1985-09-10", "%Y-%m-%d"),
+            "nationality": "Canada",
+            "city": "Toronto, ON",
+            "email": "david.k@example.com",
+            "role": "Marketing Manager",
+            "work_duration": "8 years",
+            "work_location": "Vancouver, BC",
+            "work_description": "Managed marketing campaigns and achieved double-digit growth.",
+            "school": "Marketing College",
+            "major": "Marketing Management",
+            "year_completed": 2013,
+            "job": {"id": "2", "title": "Marketing Manager"},
+            "employee": {"id": "2", "name": "EliteTech Services"},
+        },
+        "3": {
+            "name": "Maria Rodriguez",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1992-03-15", "%Y-%m-%d"),
+            "nationality": "Mexico",
+            "city": "Mexico City",
+            "email": "maria.r@example.com",
+            "role": "Registered Nurse",
+            "work_duration": "6 years",
+            "work_location": "Los Angeles, CA",
+            "work_description": "Provided compassionate care and assisted in life-saving procedures.",
+            "school": "Nursing College",
+            "major": "Nursing",
+            "year_completed": 2016,
+            "job": {"id": "3", "title": "Registered Nurse"},
+            "employee": {"id": "3", "name": "HealthCare Plus"},
+        },
+        "4": {
+            "name": "John Smith",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1988-12-05", "%Y-%m-%d"),
+            "nationality": "United Kingdom",
+            "city": "London",
+            "email": "john.s@example.com",
+            "role": "Sales Representative",
+            "work_duration": "9 years",
+            "work_location": "Chicago, IL",
+            "work_description": "Exceeded sales targets and built strong client relationships.",
+            "school": "Sales Academy",
+            "major": "Sales and Marketing",
+            "year_completed": 2012,
+            "job": {"id": "4", "title": "Sales Representative"},
+            "employee": {"id": "4", "name": "RedSky Marketing"},
+        },
+        "5": {
+            "name": "Sophie Lee",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1991-07-25", "%Y-%m-%d"),
+            "nationality": "South Korea",
+            "city": "Seoul",
+            "email": "sophie.l@example.com",
+            "role": "Graphic Designer",
+            "work_duration": "7 years",
+            "work_location": "Austin, TX",
+            "work_description": "Designed visually stunning graphics for diverse projects.",
+            "school": "Design Institute",
+            "major": "Graphic Design",
+            "year_completed": 2015,
+            "job": {"id": "5", "title": "Graphic Designer"},
+            "employee": {"id": "5", "name": "BlueWave Innovations"},
+        },
+        "6": {
+            "name": "Daniel Miller",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1993-04-30", "%Y-%m-%d"),
+            "nationality": "Australia",
+            "city": "Sydney",
+            "email": "daniel.m@example.com",
+            "role": "Financial Analyst",
+            "work_duration": "6 years",
+            "work_location": "Boston, MA",
+            "work_description": "Analyzed financial data to provide valuable insights for decision-making.",
+            "school": "Finance School",
+            "major": "Finance",
+            "year_completed": 2014,
+            "job": {"id": "6", "title": "Financial Analyst"},
+            "employee": {"id": "6", "name": "Oakwood Financial Group"},
+        },
+        "7": {
+            "name": "Luisa Sanchez",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1989-02-18", "%Y-%m-%d"),
+            "nationality": "Spain",
+            "city": "Barcelona",
+            "email": "luisa.s@example.com",
+            "role": "Customer Service Representative",
+            "work_duration": "5 years",
+            "work_location": "Miami, FL",
+            "work_description": "Provided exceptional support to clients and resolved issues.",
+            "school": "Customer Service Academy",
+            "major": "Customer Service Management",
+            "year_completed": 2017,
+            "job": {"id": "7", "title": "Customer Service Representative"},
+            "employee": {"id": "7", "name": "SilverLine Logistics"},
+        },
+        "8": {
+            "name": "Lucas Brown",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1990-06-12", "%Y-%m-%d"),
+            "nationality": "Canada",
+            "city": "Montreal, QC",
+            "email": "lucas.b@example.com",
+            "role": "Mechanical Engineer",
+            "work_duration": "8 years",
+            "work_location": "Seattle, WA",
+            "work_description": "Worked on cutting-edge projects from concept to production.",
+            "school": "Engineering College",
+            "major": "Mechanical Engineering",
+            "year_completed": 2013,
+            "job": {"id": "8", "title": "Mechanical Engineer"},
+            "employee": {"id": "8", "name": "TechFusion Solutions"},
+        },
+        "9": {
+            "name": "Elena Martinez",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1992-08-27", "%Y-%m-%d"),
+            "nationality": "Mexico",
+            "city": "Guadalajara",
+            "email": "elena.m@example.com",
+            "role": "Human Resources Specialist",
+            "work_duration": "6 years",
+            "work_location": "Denver, CO",
+            "work_description": "Managed recruitment, employee relations, and HR policies.",
+            "school": "HR College",
+            "major": "Human Resources Management",
+            "year_completed": 2015,
+            "job": {"id": "9", "title": "Human Resources Specialist"},
+            "employee": {"id": "9", "name": "GoldenGate Technologies"},
+        },
+        "10": {
+            "name": "Carlos Gomez",
+            "mobile": "+254123456",
+            "date_of_birth": datetime.strptime("1991-12-08", "%Y-%m-%d"),
+            "nationality": "Mexico",
+            "city": "Monterrey",
+            "email": "carlos.g@example.com",
+            "role": "Chef",
+            "work_duration": "7 years",
+            "work_location": "San Diego, CA",
+            "work_description": "Created delicious dishes and managed a dynamic kitchen.",
+            "school": "Culinary Institute",
+            "major": "Culinary Arts",
+            "year_completed": 2014,
+            "job": {"id": "10", "title": "Chef"},
+            "employee": {"id": "10", "name": "GreenHarbor Ventures"},
+        },
+    }
+
+    for app_id, app_info in employee_application_data.items():
+        job_id = app_info["job"]["id"]
+        employee_id = app_info["employee"]["id"]
+        employee_application = EmployeeApplication(
+            name=app_info["name"],
+            date_of_birth=app_info["date_of_birth"],
+            nationality=app_info["nationality"],
+            city=app_info["city"],
+            email=app_info["email"],
+            mobile=app_info["mobile"],
+            role=app_info["role"],
+            work_duration=app_info["work_duration"],
+            work_location=app_info["work_location"],
+            work_description=app_info["work_description"],
+            school=app_info["school"],
+            major=app_info["major"],
+            year_completed=app_info["year_completed"],
+            job=Job.query.get(job_id),
+            employee=Employee.query.get(employee_id),
+        )
+        db.session.add(employee_application)
+
+    # Company Profiles
+    company_profile_data = {
+        "1": {
+            "employer_id": "1",
+            "employer_name": "BrightSolutions, Inc",
+            "business_industry": "Technology",
+            "employee_size": "Medium",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "United States",
+            "city": "San Francisco",
+            "address": "123 Tech Street",
+            "primary_contact_email": "contact@techcompany.com",
+            "primary_contact_phone": "415-123-4567",
+        },
+        "2": {
+            "employer_id": "2",
+            "employer_name": "EliteTech Services",
+            "business_industry": "Finance",
+            "employee_size": "Large",
+            "base_currency": "EUR",
+            "continent": "Europe",
+            "country": "United Kingdom",
+            "city": "London",
+            "address": "456 Finance Avenue",
+            "primary_contact_email": "finance@companyuk.co.uk",
+            "primary_contact_phone": "+44 20 7890 1234",
+        },
+        "3": {
+            "employer_id": "3",
+            "employer_name": "GreenHarbor Ventures",
+            "business_industry": "Healthcare",
+            "employee_size": "Small",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "Canada",
+            "city": "Toronto",
+            "address": "789 Health Way",
+            "primary_contact_email": "healthcare@canadiancorp.com",
+            "primary_contact_phone": "416-555-6789",
+        },
+        "4": {
+            "employer_id": "4",
+            "employer_name": "RedSky Marketing",
+            "business_industry": "Retail",
+            "employee_size": "Medium",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "United States",
+            "city": "New York",
+            "address": "101 Retail Boulevard",
+            "primary_contact_email": "info@retailgroup.com",
+            "primary_contact_phone": "212-987-6543",
+        },
+        "5": {
+            "employer_id": "5",
+            "employer_name": "BlueWave Innovations",
+            "business_industry": "Entertainment",
+            "employee_size": "Small",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "United States",
+            "city": "Los Angeles",
+            "address": "234 Entertainment Lane",
+            "primary_contact_email": "contact@entertainmentco.com",
+            "primary_contact_phone": "310-567-8901",
+        },
+        "6": {
+            "employer_id": "6",
+            "employer_name": "SilverLine Logistics",
+            "business_industry": "Automotive",
+            "employee_size": "Large",
+            "base_currency": "JPY",
+            "continent": "Asia",
+            "country": "Japan",
+            "city": "Tokyo",
+            "address": "345 Auto Road",
+            "primary_contact_email": "info@japaneseauto.co.jp",
+            "primary_contact_phone": "+81 3-4567-8901",
+        },
+        "7": {
+            "employer_id": "7",
+            "employer_name": "TechFusion Solutions",
+            "business_industry": "Food and Beverage",
+            "employee_size": "Medium",
+            "base_currency": "EUR",
+            "continent": "Europe",
+            "country": "France",
+            "city": "Paris",
+            "address": "456 Food Street",
+            "primary_contact_email": "contact@frenchfood.fr",
+            "primary_contact_phone": "+33 1 2345 6789",
+        },
+        "8": {
+            "employer_id": "8",
+            "employer_name": "Oakwood Financial Group",
+            "business_industry": "Aerospace",
+            "employee_size": "Large",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "United States",
+            "city": "Houston",
+            "address": "567 Aerospace Avenue",
+            "primary_contact_email": "info@aerospaceco.com",
+            "primary_contact_phone": "713-890-1234",
+        },
+        "9": {
+            "employer_id": "9",
+            "employer_name": "PacificPulse Media",
+            "business_industry": "Education",
+            "employee_size": "Medium",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "Canada",
+            "city": "Vancouver",
+            "address": "678 Education Lane",
+            "primary_contact_email": "contact@schoolcanada.ca",
+            "primary_contact_phone": "604-555-7890",
+        },
+        "10": {
+            "employer_id": "10",
+            "employer_name": "GoldenGate Technologies",
+            "business_industry": "Hospitality",
+            "employee_size": "Small",
+            "base_currency": "USD",
+            "continent": "North America",
+            "country": "Mexico",
+            "city": "Cancun",
+            "address": "789 Hospitality Avenue",
+            "primary_contact_email": "contact@cancunresorts.com",
+            "primary_contact_phone": "998-123-4567",
+        },
+    }
+
+    for profile_id, profile_info in company_profile_data.items():
+        employer_id = profile_info["employer_id"]
+        company_profile = CompanyProfile(
+            employer=Employer.query.get(employer_id),
+            business_industry=profile_info["business_industry"],
+            employee_size=profile_info["employee_size"],
+            base_currency=profile_info["base_currency"],
+            continent=profile_info["continent"],
+            country=profile_info["country"],
+            city=profile_info["city"],
+            address=profile_info["address"],
+            primary_contact_email=profile_info["primary_contact_email"],
+            primary_contact_phone=profile_info["primary_contact_phone"],
+        )
+        db.session.add(company_profile)
+
+    # Ratings
+    rating_data = {
+        "1": {
+            "rating": 4,
+            "employee": {"id": "1", "name": "Emily Johnson"},
+            "employer": {"id": "1", "name": "BrightSolutions, Inc"},
+            "date": current_date,
+        },
+        "2": {
+            "rating": 5,
+            "employee": {"id": "2", "name": "Michael Carter"},
+            "employer": {"id": "2", "name": "EliteTech Services"},
+            "date": current_date,
+        },
+        "3": {
+            "rating": 5,
+            "employee": {"id": "3", "name": "Sophia Anderson"},
+            "employer": {"id": "3", "name": "GreenHarbor Ventures"},
+            "date": current_date,
+        },
+        "4": {
+            "rating": 5,
+            "employee": {"id": "4", "name": "Daniel Martinez"},
+            "employer": {"id": "4", "name": "RedSky Marketing"},
+            "date": current_date,
+        },
+        "5": {
+            "rating": 5,
+            "employee": {"id": "5", "name": "Olivia Taylor"},
+            "employer": {"id": "5", "name": "BlueWave Innovations"},
+            "date": current_date,
+        },
+        "6": {
+            "rating": 5,
+            "employee": {"id": "6", "name": "Benjamin Clark"},
+            "employer": {"id": "6", "name": "SilverLine Logistics"},
+            "date": current_date,
+        },
+        "7": {
+            "rating": 5,
+            "employee": {"id": "7", "name": "Ava Wilson"},
+            "employer": {"id": "7", "name": "TechFusion Solutions"},
+            "date": current_date,
+        },
+        "8": {
+            "rating": 5,
+            "employee": {"id": "8", "name": "Liam Robinson"},
+            "employer": {"id": "8", "name": "Oakwood Financial Group"},
+            "date": current_date,
+        },
+        "9": {
+            "rating": 5,
+            "employee": {"id": "9", "name": "Mia Garcia"},
+            "employer": {"id": "9", "name": "PacificPulse Media"},
+            "date": current_date,
+        },
+        "10": {
+            "rating": 5,
+            "employee": {"id": "10", "name": "William Davis"},
+            "employer": {"id": "10", "name": "GoldenGate Technologies"},
+            "date": current_date,
+        }
+    }
+
+    for rating_id, rating_info in rating_data.items():
+        employee_id = rating_info["employee"]["id"]
+        employer_id = rating_info["employer"]["id"]
         rating = Rating(
-            rating=randint(1, 5),
-            date=fake.date_time_between(start_date="-2y", end_date="now", tzinfo=None)
+            rating=rating_info["rating"],
+            employee=Employee.query.get(employee_id),
+            employer=Employer.query.get(employer_id),
         )
         db.session.add(rating)
-        
-if __name__ == "__main__":
-    with app.app_context():
-        num_employees = 10  # Change as needed
-        num_employers = 5   # Change as needed
-        num_jobs = 20       # Change as needed
-        num_ratings = 15   # Change as needed
 
-        create_employees(num_employees)
-        create_employers(num_employers)
-        create_jobs(num_jobs)
-        create_ratings(num_ratings)
 
-        db.session.commit()
+    db.session.commit()
