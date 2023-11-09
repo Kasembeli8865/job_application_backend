@@ -8,12 +8,11 @@ from models import *
 import bcrypt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ="sqlite:///database.db"
+app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:Us4X1W7VyANNar9gJAdyp6Vl33zdIFkb@dpg-cl6195al7jac73d4gc10-a.oregon-postgres.render.com/gighunter"
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
 def get_access_token():
     auth_header = request.headers.get("Authorization")
