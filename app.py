@@ -13,12 +13,13 @@ app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
+
 def get_access_token():
     auth_header = request.headers.get("Authorization")
-    print("Authorization Header:", auth_header)   ##check if auth header is retrieved
 
-    if auth_header and auth_header.startswith("Bearer "):
+    if auth_header and auth_header.startswith("Bearer "):  
         return auth_header[7:]
     else:
         return None
@@ -243,58 +244,56 @@ api.add_resource(EmployerApplicantsResource, '/employers/<int:employer_id>/appli
 
               ######################Resource for employers to post jobs##########################
 class JobPostResource(Resource):
-    @jwt_required()
-    def post(self):
+
+     def post(self):
+            
         form = JobForm()
-        parser = reqparse.RequestParser()
-        parser.add_argument('access_token', type=str, location='headers')  # You may need to adjust this header
-        args = parser.parse_args()
-
-        # print("Access Token:", args['access_token'])  # check if access token is returned
-
-        if not args['access_token']:
+        
+        access_token = request.headers.get('Authorization', None)
+        
+        if not access_token:
             return {'error': 'Access token is required'}, 400
+            
+        access_token = access_token.split(' ')[1]
+        
+        current_user = get_current_user(access_token)  
 
-        current_user = get_current_user(args['access_token'])
-        print("current user", current_user)
         if not current_user:
             return {'error': 'Invalid access token'}, 401
 
         if current_user['role'] != 'employer':
             return {'error': 'Only employers can post jobs'}, 403
-
-        if form.validate():
-                 ##################Process form data and save the job to the database########################
-            new_job = Job(
+            
+        new_job = Job(
                 title=form.title.data,
                 description=form.description.data,
                 salary=form.salary.data,
                 location=form.location.data,
                 type=form.type.data,
                 image=form.image.data.read() if form.image.data else None,
-                employer=current_user 
+                employer=current_user
             )
-            db.session.add(new_job)
-            db.session.commit()
-            return {'message': 'Job posted successfully'}, 201
-        return {'error': form.errors}, 400
+
+        db.session.add(new_job)
+        db.session.commit()
+
+        return {'message': 'Job posted successfully'}, 201
 
            ###########Resource for employees to apply for a job################
 class EmployeeApplicationResource(Resource):
+
     def post(self, job_id):
+
         form = EmployeeApplicationForm()
-
-        if not form.validate_on_submit():
-            return {'error': form.errors}, 400
-
-        parser = reqparse.RequestParser()
-        parser.add_argument('access_token', type=str, location='headers')
-        args = parser.parse_args()
-
-        if not args['access_token']:
+        
+        access_token = request.headers.get('Authorization', None)
+        
+        if not access_token:
             return {'error': 'Access token is required'}, 400
-
-        current_user = get_current_user(args['access_token'])
+        
+        access_token = access_token.split(' ')[1]
+        
+        current_user = get_current_user(access_token)
 
         if not current_user:
             return {'error': 'Invalid access token'}, 401
@@ -338,7 +337,7 @@ api.add_resource(EmployeeApplicationResource, '/employees/apply/<int:job_id>')
 
 class Home(Resource):
     def get(self):
-        return 'Welcome to SkillHunter'
+        return 'Welcome to GigHunter'
 
 api.add_resource(Home, '/')
 
