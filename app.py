@@ -6,9 +6,14 @@ from datetime import datetime
 from flask_cors import CORS
 from models import *
 import bcrypt
+from sqlalchemy.orm import Session
+
+session = Session()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:2NP0I6BzacFQHxG5D79vLlnc25Inu3uM@dpg-cl62nkiuuipc73c7h6jg-a.oregon-postgres.render.com/gighunter_xw5w"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gighunt.db'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:2NP0I6BzacFQHxG5D79vLlnc25Inu3uM@dpg-cl62nkiuuipc73c7h6jg-a.oregon-postgres.render.com/gighunter_xw5w"
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

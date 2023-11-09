@@ -301,7 +301,7 @@ with app.app_context():
             location=job_info["location"],
             type=job_info["type"],
             image=job_info["image"],
-            employer=Employer.query.get(employer_id),
+            employer_id=job_info["employer"]["id"],
         )
         db.session.add(job)
 
