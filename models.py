@@ -19,7 +19,7 @@ class Employee(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80))
     password_hash = db.Column(db.String)
-    skills = db.Column(db.JSON)
+    skills = db.Column(db.String(300))
     experience = db.Column(db.Integer)
     image = db.Column(db.String(255))
 
