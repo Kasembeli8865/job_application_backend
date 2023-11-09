@@ -13,7 +13,6 @@ app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
 
 def get_access_token():
@@ -238,8 +237,30 @@ class EmployerApplicantsResource(Resource):
                 applicants.append(application.to_dict())
 
         return {'applicants': applicants}
+    
 
 api.add_resource(EmployerApplicantsResource, '/employers/<int:employer_id>/applicants')
+
+
+class EmployeeApplicationsResource(Resource):
+
+    
+    def get(self, employee_id):
+        employee = Employee.query.get(employee_id)
+
+        applications = EmployeeApplication.query.filter_by(employee_id=employee.id).all()
+
+        applied_jobs = []
+
+        for app in applications:
+            job = Job.query.get(app.job_id)
+            applied_jobs.append(job.to_dict()) 
+            
+        return {'applied_jobs': applied_jobs}
+
+
+
+api.add_resource(EmployeeApplicationsResource, '/employees/<int:employee_id>/applications')
 
 
               ######################Resource for employers to post jobs##########################
@@ -247,13 +268,16 @@ class JobPostResource(Resource):
     def post(self):
         form = JobForm()
         
+        image = form.image.data
+
         new_job = Job(
             title=form.title.data,
             description=form.description.data, 
             salary=form.salary.data,
             location=form.location.data,
             type=form.type.data,
-            image=form.image.data.read() if form.image.data else None,
+            # image=form.image.data.read() if form.image.data else None,
+            image=image
             
         )
         
@@ -300,27 +324,9 @@ class EmployeeApplicationResource(Resource):
 api.add_resource(JobPostResource, '/employers/post_job')
 api.add_resource(EmployeeApplicationResource, '/employees/apply/<int:job_id>')
 
-class EmployeeApplicationsGetResource(Resource):
-
-  @jwt_required()
-  def get(self, employee_id):
-    employee = Employee.query.get(employee_id)
-
-    applications = EmployeeApplication.query.filter_by(employee_id=employee.id).all()
-
-    applied_jobs = []
-
-    for app in applications:
-        job = Job.query.get(app.job_id)
-        applied_jobs.append(job.to_dict()) 
-
-    return {'applied_jobs': applied_jobs}
-
-api.add_resource(EmployeeApplicationsGetResource, '/employees/<int:employee_id>/applications')
-
 class Home(Resource):
     def get(self):
-        return 'Welcome to SkillHunter'
+        return 'Welcome to GigHunter'
 
 api.add_resource(Home, '/')
 
