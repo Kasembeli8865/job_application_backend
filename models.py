@@ -149,7 +149,7 @@ class Job(db.Model):
             'salary': self.salary,
             'location': self.location,
             'type': self.type,
-            'employer': self.employer.to_dict() if self.employer else None,
+            'employer_id': self.employer_id,
            'image': self.image 
         }
 
