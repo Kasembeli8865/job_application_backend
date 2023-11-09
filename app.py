@@ -300,6 +300,24 @@ class EmployeeApplicationResource(Resource):
 api.add_resource(JobPostResource, '/employers/post_job')
 api.add_resource(EmployeeApplicationResource, '/employees/apply/<int:job_id>')
 
+class EmployeeApplicationsGetResource(Resource):
+
+  @jwt_required()
+  def get(self, employee_id):
+    employee = Employee.query.get(employee_id)
+
+    applications = EmployeeApplication.query.filter_by(employee_id=employee.id).all()
+
+    applied_jobs = []
+
+    for app in applications:
+        job = Job.query.get(app.job_id)
+        applied_jobs.append(job.to_dict()) 
+
+    return {'applied_jobs': applied_jobs}
+
+api.add_resource(EmployeeApplicationsGetResource, '/employees/<int:employee_id>/applications')
+
 class Home(Resource):
     def get(self):
         return 'Welcome to SkillHunter'
