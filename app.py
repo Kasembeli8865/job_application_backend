@@ -221,7 +221,7 @@ api.add_resource(CompanyProfileResource, '/employers/<int:employer_id>/company_p
 
 
 class EmployerApplicantsResource(Resource):
-    @jwt_required()
+    
     def get(self, employer_id):
         employer = Employer.query.get(employer_id)
         if not employer:
@@ -244,71 +244,37 @@ api.add_resource(EmployerApplicantsResource, '/employers/<int:employer_id>/appli
 
               ######################Resource for employers to post jobs##########################
 class JobPostResource(Resource):
-
-     def post(self):
-            
+    def post(self):
         form = JobForm()
         
-        access_token = request.headers.get('Authorization', None)
-        
-        if not access_token:
-            return {'error': 'Access token is required'}, 400
-            
-        access_token = access_token.split(' ')[1]
-        
-        current_user = get_current_user(access_token)  
-
-        if not current_user:
-            return {'error': 'Invalid access token'}, 401
-
-        if current_user['role'] != 'employer':
-            return {'error': 'Only employers can post jobs'}, 403
-            
         new_job = Job(
-                title=form.title.data,
-                description=form.description.data,
-                salary=form.salary.data,
-                location=form.location.data,
-                type=form.type.data,
-                image=form.image.data.read() if form.image.data else None,
-                employer=current_user
-            )
-
+            title=form.title.data,
+            description=form.description.data, 
+            salary=form.salary.data,
+            location=form.location.data,
+            type=form.type.data,
+            image=form.image.data.read() if form.image.data else None,
+            
+        )
+        
         db.session.add(new_job)
         db.session.commit()
-
+        
         return {'message': 'Job posted successfully'}, 201
-
+    
            ###########Resource for employees to apply for a job################
 class EmployeeApplicationResource(Resource):
-
     def post(self, job_id):
-
         form = EmployeeApplicationForm()
         
-        access_token = request.headers.get('Authorization', None)
-        
-        if not access_token:
-            return {'error': 'Access token is required'}, 400
-        
-        access_token = access_token.split(' ')[1]
-        
-        current_user = get_current_user(access_token)
-
-        if not current_user:
-            return {'error': 'Invalid access token'}, 401
-
-        if current_user['role'] != 'employee':
-            return {'error': 'Only employees can apply for jobs'}, 403
-
         job = Job.query.get(job_id)
+        
         if not job:
             return {'error': 'Job not found'}, 404
-
+            
         try:
             new_application = EmployeeApplication(
-                job=job,
-                employee=current_user,
+                job=job, 
                 name=form.name.data,
                 date_of_birth=form.date_of_birth.data,
                 nationality=form.nationality.data,
@@ -323,12 +289,11 @@ class EmployeeApplicationResource(Resource):
                 major=form.major.data,
                 year_completed=form.year_completed.data
             )
-
+            
             db.session.add(new_application)
             db.session.commit()
-
+            
             return {'message': 'Application submitted successfully'}, 201
-
         except Exception as e:
             return {'error': 'Error submitting the application'}, 500
 
@@ -337,7 +302,7 @@ api.add_resource(EmployeeApplicationResource, '/employees/apply/<int:job_id>')
 
 class Home(Resource):
     def get(self):
-        return 'Welcome to GigHunter'
+        return 'Welcome to SkillHunter'
 
 api.add_resource(Home, '/')
 
@@ -415,7 +380,7 @@ class JobResource(Resource):
         jobs = Job.query.all()
         return {'jobs': [j.to_dict() for j in jobs]}
 
-    @role_required('employer')
+    
     def post(self):
         data = request.get_json()
         new_job = Job(**data)
@@ -433,14 +398,14 @@ class JobById(Resource):
             return job.to_dict()
         return {'error': 'Job not found'}, 404
 
-    @role_required('employer')
+    
     def patch(self, job_id):
         job = Job.query.get(job_id)
         if job:
             return job.to_dict()
         return {'error': 'Job not found'}, 404
 
-    @role_required('employer')
+   
     def delete(self, job_id):
         job = Job.query.get(job_id)
         if job:
