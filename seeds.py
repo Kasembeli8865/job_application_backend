@@ -303,7 +303,7 @@ with app.app_context():
             image=job_info["image"],
             employer=Employer.query.get(employer_id),
         )
-        db.session.add(company_profile)
+        db.session.add(job)
 
     # Employee Applications
     employee_application_data = {
@@ -725,5 +725,5 @@ with app.app_context():
         )
         db.session.add(rating)
 
-
+# Commit the changes to the database
     db.session.commit()

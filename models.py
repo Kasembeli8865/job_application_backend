@@ -236,5 +236,3 @@ class EmployeeApplication(db.Model):
     school = db.Column(db.String)
     major = db.Column(db.String)
     year_completed = db.Column(db.Integer)
-
-
