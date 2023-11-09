@@ -279,7 +279,8 @@ class JobPostResource(Resource):
             type=form.type.data,
             # image=form.image.data.read() if form.image.data else None,
             
-            employer_id=form.employer_id.data
+            employer_id=form.employer_id.data,
+            image=image
             
         )
         
