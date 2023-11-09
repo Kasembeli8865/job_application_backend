@@ -5,6 +5,11 @@ from models import Employee, Employer, Job, Rating, EmployeeApplication, Company
 current_date = datetime.now()
 # Employees
 with app.app_context():
+    db.drop_all()
+    
+    db.create_all()
+
+    
     employee_data = {
         "1": {
             "name": "Emily Johnson",
