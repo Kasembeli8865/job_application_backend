@@ -725,5 +725,5 @@ with app.app_context():
         )
         db.session.add(rating)
 
-
+# Commit the changes to the database
     db.session.commit()
