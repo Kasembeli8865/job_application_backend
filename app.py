@@ -13,6 +13,7 @@ app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
 
 def get_access_token():
