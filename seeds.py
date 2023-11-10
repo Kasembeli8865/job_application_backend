@@ -5,6 +5,11 @@ from models import Employee, Employer, Job, Rating, EmployeeApplication, Company
 current_date = datetime.now()
 # Employees
 with app.app_context():
+    db.drop_all()
+    
+    db.create_all()
+
+    
     employee_data = {
         "1": {
             "name": "Emily Johnson",
@@ -301,7 +306,7 @@ with app.app_context():
             location=job_info["location"],
             type=job_info["type"],
             image=job_info["image"],
-            employer=Employer.query.get(employer_id),
+            employer_id=job_info["employer"]["id"],
         )
         db.session.add(job)
 

@@ -6,15 +6,23 @@ from datetime import datetime
 from flask_cors import CORS
 from models import *
 import bcrypt
+from sqlalchemy.orm import Session
+
+session = Session()
 
 app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gighunt.db'
+
 app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:2NP0I6BzacFQHxG5D79vLlnc25Inu3uM@dpg-cl62nkiuuipc73c7h6jg-a.oregon-postgres.render.com/gighunter_xw5w"
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#postgres://skillhunter:AAl15UpE0pn5nZYm0X1ZcvrBfGIdhy88@dpg-cl4gmfpnovjs739jgpgg-a.oregon-postgres.render.com/skillhunter_hkko
 CORS(app)
+
+def drop_database():
+    db.drop_all()
+    print("Database dropped.")
 
 def get_access_token():
     auth_header = request.headers.get("Authorization")
@@ -278,8 +286,6 @@ class JobPostResource(Resource):
             location=form.location.data,
             type=form.type.data,
             # image=form.image.data.read() if form.image.data else None,
-            
-            employer_id=form.employer_id.data,
             image=image
             
         )

@@ -11,10 +11,14 @@ flask-restful = "*"
 flask-jwt-extended = "*"
 wtforms = "*"
 bcrypt = "*"
+flask-wtf = "*"
+flask-cors = "*"
+flask-migrate = "*"
+psycopg2-binary = "*"
+pysqlite3 = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.10"
 python_full_version = "3.10.12"
-
