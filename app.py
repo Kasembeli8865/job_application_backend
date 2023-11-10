@@ -321,7 +321,7 @@ class EmployeeApplicationResource(Resource):
                 school=form.school.data,
                 major=form.major.data,
                 year_completed=form.year_completed.data,
-                employee_id: form.employee_id.data,
+                employee_id=form.employee_id.data,
                 job_id=job_id
             )
             
