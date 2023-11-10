@@ -129,7 +129,7 @@ class Job(db.Model):
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
     employer = db.relationship('Employer', backref='jobs')
 
-    def __init__(self, title, description, salary, location, type, image, employer_id):
+    def __init__(self, title, description, salary, location, type, employer_id, image):
         self.title = title
         self.description = description
         self.salary = salary
