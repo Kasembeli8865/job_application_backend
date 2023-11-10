@@ -320,7 +320,9 @@ class EmployeeApplicationResource(Resource):
                 work_description=form.work_description.data,
                 school=form.school.data,
                 major=form.major.data,
-                year_completed=form.year_completed.data
+                year_completed=form.year_completed.data,
+                employee_id: form.employee_id.data,
+                job_id=job_id
             )
             
             db.session.add(new_application)
