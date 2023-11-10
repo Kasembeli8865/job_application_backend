@@ -25,3 +25,5 @@ class EmployeeApplicationForm(FlaskForm):
   school = StringField('School')
   major = StringField('Major')
   year_completed = IntegerField('Year Completed')
+  employee_id = IntegerField("employee_id")
+  job_id = IntegerField("job_id")
