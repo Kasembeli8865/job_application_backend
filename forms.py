@@ -7,6 +7,7 @@ class JobForm(FlaskForm):
   description = TextAreaField('Description')
   salary = IntegerField('Salary')
   location = StringField('Location')
+  employer_id = IntegerField('employer_id')
   type = SelectField('Type', choices=[('Full-time', 'Full-time'), ('Part-time', 'Part-time')])
 
 class EmployeeApplicationForm(FlaskForm):
