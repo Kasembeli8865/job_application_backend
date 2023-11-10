@@ -125,17 +125,17 @@ class Job(db.Model):
     salary = db.Column(db.Integer)
     location = db.Column(db.String)
     type = db.Column(db.String)
-    image = db.Column(db.String) 
+    # image = db.Column(db.String) 
     employer_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
     employer = db.relationship('Employer', backref='jobs')
 
-    def __init__(self, title, description, salary, location, type, employer_id, image):
+    def __init__(self, title, description, salary, location, type, employer_id):
         self.title = title
         self.description = description
         self.salary = salary
         self.location = location
         self.type = type
-        self.image = image
+        # self.image = image
         self.employer_id = employer_id
 
     def __repr__(self):
@@ -150,7 +150,7 @@ class Job(db.Model):
             'location': self.location,
             'type': self.type,
             'employer_id': self.employer_id,
-           'image': self.image 
+        #    'image': self.image 
         }
 
 class Rating(db.Model):

@@ -11,9 +11,9 @@ from sqlalchemy.orm import Session
 session = Session()
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gighunt.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gighunt.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:2NP0I6BzacFQHxG5D79vLlnc25Inu3uM@dpg-cl62nkiuuipc73c7h6jg-a.oregon-postgres.render.com/gighunter_xw5w"
+# app.config['SQLALCHEMY_DATABASE_URI'] ="postgresql://gighunter:2NP0I6BzacFQHxG5D79vLlnc25Inu3uM@dpg-cl62nkiuuipc73c7h6jg-a.oregon-postgres.render.com/gighunter_xw5w"
 app.config['JWT_SECRET_KEY'] = 'Tingatales1'
 app.config['SECRET_KEY'] = 'Tingatales1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -277,7 +277,7 @@ class JobPostResource(Resource):
     def post(self):
         form = JobForm()
         
-        image = form.image.data
+        # image = form.image.data
 
         new_job = Job(
             title=form.title.data,
@@ -286,7 +286,8 @@ class JobPostResource(Resource):
             location=form.location.data,
             type=form.type.data,
             # image=form.image.data.read() if form.image.data else None,
-            image=image
+            # image=form.image.data
+            employer_id=form.employer_id.data
             
         )
         
